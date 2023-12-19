@@ -2,15 +2,33 @@ module Lang where
 
 type Id = String
 
+type Loc = (Region, Type)
+
 data Expression =
       Literal Int
+    | Location Loc
     | Var Id
     | Lambda Id Type Expression
     | App Expression Expression
     | New Region Type Expression
     | Get Expression
     | Set Expression Expression
-    
+
+data Value =
+      VLiteral Int
+    | VVar Id
+    | VLambda Id Type Expression
+
+expOfVal (VLiteral x) = Literal x
+expOfVal (VVar x) = Var x
+expOfVal (VLambda x t e) = Lambda x t e
+
+valOfExp :: Expression -> Value
+valOfExp (Literal x) = VLiteral x
+valOfExp (Var x) = VVar x
+valOfExp (Lambda x t e) = VLambda x t e
+valOfExp x = error "Expression is not a value."
+
 isValue e = case e of
     Literal _ -> True
     Var _ -> True
